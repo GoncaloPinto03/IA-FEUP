@@ -1,4 +1,6 @@
 import algorithms
+import book
+import library
 
 # draw main menu function
 def drawMainMenu():
@@ -36,29 +38,45 @@ def drawSelectAlgorithm():
     print("7| Go back")
     print("________________________\n")
 
+def read_input_file(input_file):
+    with open(input_file, 'r') as file:
+        # Read the first line
+        B, L, D = map(int, file.readline().strip().split())
+        
+        # Read the second line to get scores of individual books
+        book_scores = list(map(int, file.readline().strip().split()))
+
+        # Read library information
+        libraries = []
+        for _ in range(L):
+            Nj, Tj, Mj = map(int, file.readline().strip().split())
+            books_in_library = list(map(int, file.readline().strip().split()))
+            books = [book.Book(book_id, book_scores[book_id]) for book_id in books_in_library]
+            libraries.append(library.Library(_, books, Tj, Mj))
+
+        return B, L, D, book_scores, libraries
+
+
 # select file function
 def selectFile():
     while True:
         drawSelectFile()
         choice = input("\nEnter your choice: ")
-        if choice == '1':
-            print("You've selected a_example.txt")
-            selectAlgorithm("a_example.txt")
-        elif choice == '2':
-            print("You've selected b_read_on.txt")
-            selectAlgorithm("b_read_on.txt")
-        elif choice == '3':
-            print("You've selected c_incunabula.txt")
-            selectAlgorithm("c_incunabula.txt")
-        elif choice == '4':
-            print("You've selected d_tough_choices.txt")
-            selectAlgorithm("d_tough_choices.txt")
-        elif choice == '5':
-            print("You've selected e_so_many_books.txt")
-            selectAlgorithm("e_so_many_books.txt")
-        elif choice == '6':
-            print("You've selected f_libraries_of_the_world.txt")
-            selectAlgorithm("f_libraries_of_the_world.txt")
+        files = ["./dataset/a_example.txt", "./dataset/b_read_on.txt", "./dataset/c_incunabula.txt", "./dataset/d_tough_choices.txt", "./dataset/e_so_many_books.txt", "./dataset/f_libraries_of_the_world.txt"]
+        if choice in map(str, range(1, len(files) + 1)):
+            input_file = files[int(choice) - 1]
+            print(f"You've selected {input_file}")
+            B, L, D, book_scores, libraries = read_input_file(input_file)
+            # Now you have all the necessary data, you can use it as required
+            # print("Number of books:", B)
+            # print("Number of libraries:", L)
+            # print("Number of days:", D)
+            # print("Book scores:", book_scores)
+            # print("Libraries:", libraries)
+            # for lib in libraries:
+            #     lib.display_details()  # Print details of each library
+            # Pass B, L, D, book_scores, libraries to your algorithms if needed
+            selectAlgorithm(input_file)
         elif choice == '7':
             break
         else:
