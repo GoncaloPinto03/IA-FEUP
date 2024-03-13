@@ -9,8 +9,12 @@ class Library:
     def __str__(self):
         return f"{self.name} library with {len(self.books)} books"
     
-    def get_books(self):
-        return self.books
+    # get books that need to be scanned
+    def get_books(self, days, scanned_books):
+        remaining = days - self.signup_days
+        n_books = self.books_per_day * remaining
+        to_send = [book.id for book in self.books if book.id not in scanned_books]  # Get book IDs instead of book objects
+        return to_send  # return the list of book IDs to be scanned
 
     def get_signup_days(self):
         return self.signup_days

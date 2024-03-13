@@ -1,6 +1,10 @@
 import algorithms
 import book
 import library
+import datetime
+
+def get_elapsed_time(t):
+    return datetime.datetime.now() - t
 
 # draw main menu function
 def drawMainMenu():
@@ -76,35 +80,42 @@ def selectFile():
             # for lib in libraries:
             #     lib.display_details()  # Print details of each library
             # Pass B, L, D, book_scores, libraries to your algorithms if needed
-            selectAlgorithm(input_file)
+            selectAlgorithm(B, L, D, book_scores, libraries)
         elif choice == '7':
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 # select algorithm function
-def selectAlgorithm(input_file):
+def selectAlgorithm(B, L, D, book_scores, libraries):
     while True:
         drawSelectAlgorithm()
         choice = input("\nEnter your choice: ")
         if choice == '1':
             print("You've selected Greedy Algorithm")
-            algorithms.greedy(input_file)
+            t = datetime.datetime.now()
+            solution, score, scanned_books_dict = algorithms.greedy(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '2':
             print("You've selected Local Search - First Neighbour Algorithm")
-            algorithms.ls_first_neighbour(input_file)
+            algorithms.ls_first_neighbour(B, L, D, book_scores, libraries)
         elif choice == '3':
             print("You've selected Local Search - Best Neighbour Algorithm")
-            algorithms.ls_best_neighbour(input_file)
+            algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
         elif choice == '4':
             print("You've selected Local Search - Random Neighbour Algorithm")
-            algorithms.ls_random_neighbour(input_file)
+            algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
         elif choice == '5':
             print("You've selected Simulated Annealing Algorithm")
-            algorithms.simulated_annealing(input_file)
+            algorithms.simulated_annealing(B, L, D, book_scores, libraries)
         elif choice == '6':
             print("You've selected Genetic Algorithm")
-            algorithms.genetic(input_file)
+            algorithms.genetic(B, L, D, book_scores, libraries)
         elif choice == '7':
             break
         else:
