@@ -2,7 +2,7 @@
 import copy
 import random
 
-def greedy(B, L, D, book_scores, libraries):
+def greedy2(B, L, D, book_scores, libraries):
     # Implement the Greedy algorithm
     day = 0
     solution = [-1 for i in range(D)]
@@ -27,6 +27,52 @@ def greedy(B, L, D, book_scores, libraries):
         solution.append(-1)
 
     return solution, score(scanned_books_set, book_scores), scanned_books_dict
+
+
+def greedy(B, L, D, book_scores, libraries):
+
+    # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
+    for library in libraries:
+        library.sort_books()  # Sort books in each library based on scores
+    libraries.sort(key=lambda lib: sum(book.score for book in lib.books) / lib.signup_days, reverse=True)
+
+    # Days remaining to sign up libraries and scan books
+    days_remaining = D
+    signup_process = []  # To keep track of the signup process
+    books_scanned = set()  # To keep track of the books that have been scanned
+    total_score = 0  # Initialize total score
+
+    # Loop through each library and determine if it can be signed up within the remaining days
+    for library in libraries:
+        if days_remaining <= 0 or days_remaining < library.signup_days:
+            break  # No more days left to sign up new libraries
+        days_remaining -= library.signup_days
+        
+        # Calculate the number of books that can be scanned from this library
+        books_to_scan = []
+        for book in library.books:
+            if len(books_to_scan) < days_remaining * library.books_per_day and book.id not in books_scanned:
+                books_to_scan.append(book)
+                books_scanned.add(book.id)
+                total_score += book.score
+        signup_process.append((library, books_to_scan))
+
+    '''
+    # Write the results to the output file
+    base_name = os.path.splitext(os.path.basename(input_file))[0]
+    output_path = f'proj/output/{base_name}_greedy.txt'
+    with open(output_path, 'w') as file:
+        # Write the number of libraries to sign up
+        file.write(f"{len(signup_process)}\n")
+        for library, books in signup_process:
+        # Write the library ID and the number of books to scan
+            file.write(f"{library.id} {len(books)}\n")
+            # Write the book IDs in the order they are scanned
+            book_ids = ' '.join(str(book.id) for book in books)
+            file.write(book_ids + "\n")
+
+    '''
+    return total_score
 
 def ls_first_neighbour(B, L, D, book_scores, libraries):
     # Implement the Local Search - First Neighbour algorithm

@@ -94,7 +94,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
         if choice == '1':
             print("You've selected Greedy Algorithm")
             t = datetime.datetime.now()
-            solution, score, scanned_books_dict = algorithms.greedy(B, L, D, book_scores, libraries)
+            score = algorithms.greedy(B, L, D, book_scores, libraries)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
