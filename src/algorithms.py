@@ -2,6 +2,33 @@
 import copy
 import random
 
+def greedy2(B, L, D, book_scores, libraries):
+    # Implement the Greedy algorithm
+    day = 0
+    solution = [-1 for i in range(D)]
+    scanned_books_set = set()
+    scanned_books_dict = dict()
+    all_libraries = copy.deepcopy(libraries)
+
+    while day < D and len(all_libraries) > 0:
+        lib_id, books = choose_best_score(D - day, all_libraries, book_scores, scanned_books_set)  # gets the best library to sign up
+        if lib_id == -1:
+            break
+        lib = libraries[lib_id]
+        scanned_books_dict[lib_id] = books
+        scanned_books_set.update(books)
+        for _ in range(lib.signup_days):  # stores in the solution the chosen library
+            solution[day] = lib_id
+            day += 1
+
+        all_libraries = [l for l in all_libraries if l.id != lib.id]  # removes chosen library from the list of available libraries
+
+    while len(solution) < D:
+        solution.append(-1)
+
+    return solution, score(scanned_books_set, book_scores), scanned_books_dict
+
+
 def greedy(B, L, D, book_scores, libraries):
 
     # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
@@ -20,7 +47,7 @@ def greedy(B, L, D, book_scores, libraries):
         if days_remaining <= 0 or days_remaining < library.signup_days:
             break  # No more days left to sign up new libraries
         days_remaining -= library.signup_days
-
+        
         # Calculate the number of books that can be scanned from this library
         books_to_scan = []
         for book in library.books:
@@ -43,6 +70,7 @@ def greedy(B, L, D, book_scores, libraries):
             # Write the book IDs in the order they are scanned
             book_ids = ' '.join(str(book.id) for book in books)
             file.write(book_ids + "\n")
+
     '''
     return total_score
 

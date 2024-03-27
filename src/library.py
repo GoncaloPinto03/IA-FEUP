@@ -40,6 +40,7 @@ class Library:
         for book in self.books:
             print(book)
             
+    # Additional method to sort the books by their score, which will be used in the greedy algorithm.
     def sort_books(self):
         self.books.sort(key=lambda x: x.score, reverse=True)
 
