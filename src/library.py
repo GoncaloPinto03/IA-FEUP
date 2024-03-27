@@ -10,7 +10,7 @@ class Library:
         return f"{self.name} library with {len(self.books)} books"
     
     # get books that need to be scanned
-    def get_books(self, days, scanned_books):
+    def get_books_to_send(self, days, scanned_books):
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
         to_send = [book.id for book in self.books if book.id not in scanned_books]  # Get book IDs instead of book objects
@@ -39,4 +39,7 @@ class Library:
         print("Books:")
         for book in self.books:
             print(book)
+            
+    def sort_books(self):
+        self.books.sort(key=lambda x: x.score, reverse=True)
 

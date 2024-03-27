@@ -66,7 +66,13 @@ def selectFile():
     while True:
         drawSelectFile()
         choice = input("\nEnter your choice: ")
-        files = ["./dataset/a_example.txt", "./dataset/b_read_on.txt", "./dataset/c_incunabula.txt", "./dataset/d_tough_choices.txt", "./dataset/e_so_many_books.txt", "./dataset/f_libraries_of_the_world.txt"]
+        files = ["./dataset/a_example.txt", 
+                 "./dataset/b_read_on.txt", 
+                 "./dataset/c_incunabula.txt", 
+                 "./dataset/d_tough_choices.txt", 
+                 "./dataset/e_so_many_books.txt", 
+                 "./dataset/f_libraries_of_the_world.txt"]
+        
         if choice in map(str, range(1, len(files) + 1)):
             input_file = files[int(choice) - 1]
             print(f"You've selected {input_file}")
@@ -94,7 +100,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
         if choice == '1':
             print("You've selected Greedy Algorithm")
             t = datetime.datetime.now()
-            solution, score, scanned_books_dict = algorithms.greedy(B, L, D, book_scores, libraries)
+            score = algorithms.greedy(B, L, D, book_scores, libraries)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
