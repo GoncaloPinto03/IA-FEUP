@@ -71,15 +71,6 @@ def selectFile():
             input_file = files[int(choice) - 1]
             print(f"You've selected {input_file}")
             B, L, D, book_scores, libraries = read_input_file(input_file)
-            # Now you have all the necessary data, you can use it as required
-            # print("Number of books:", B)
-            # print("Number of libraries:", L)
-            # print("Number of days:", D)
-            # print("Book scores:", book_scores)
-            # print("Libraries:", libraries)
-            # for lib in libraries:
-            #     lib.display_details()  # Print details of each library
-            # Pass B, L, D, book_scores, libraries to your algorithms if needed
             selectAlgorithm(B, L, D, book_scores, libraries)
         elif choice == '7':
             break
@@ -112,7 +103,14 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
         elif choice == '5':
             print("You've selected Simulated Annealing Algorithm")
-            algorithms.simulated_annealing(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score = algorithms.simulated_annealing(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '6':
             print("You've selected Genetic Algorithm")
             algorithms.genetic(B, L, D, book_scores, libraries)
