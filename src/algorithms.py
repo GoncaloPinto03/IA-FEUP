@@ -90,8 +90,6 @@ def simulated_annealing(B, L, D, book_scores, libraries):
     # Implement the Simulated Annealing algorithm
     pass
 
-
-
 def bestScores():
     # Implement the best scores algorithm
     pass
@@ -127,6 +125,7 @@ def choose_best_score(days, libraries, scores, scanned_books):
 #     # Implement the Genetic algorithm
 #     pass
 
+#--------------------------------------------------------------------------------------
 def genetic(population, book_scores, libraries, mutation_prob, swap_prob, population_variation):
     # Implement the Genetic algorithm
     pass
@@ -136,10 +135,11 @@ def genetic_options(book_scores, libraries, option):
     options = {1: "Use default values", 2: "Personalized values"}
     message = "\nGenetic algorithm uses default values.\nDo you want to continue with the default ones or do you want to personalize the values?\n"
     print(message)
-    for k, v in options.items():
-        print(str(k) + "| " + v1)
     
     while True:
+        for k, v in options.items():
+            print(str(k) + "| " + v)
+            
         choice = int(input("\nChoose the values to use in genetic algorithm: "))
         if (choice == 1): 
             # call genetic algorithm with default values
@@ -155,17 +155,14 @@ def genetic_options(book_scores, libraries, option):
             population_variation = personalized_input_for_ga("\nPopulation Variation: ", population_variation, False, 0, 1)
             return genetic(population_size, book_scores, libraries, mutation_prob, swap_prob, population_variation)
         else: 
-            print("Invalid option. Choose a valid one.")
+            print("Invalid option. Choose a valid one.\n")
         
             
 def personalized_input_for_ga(value, default_value, is_int, min_value, max_value):
     user_value = input(value + "(default = )" + str(default_value) + ":" )
     
     while True:
-        if is_int:
-            user_value = int(user_value)
-        else:
-            user_value = float(user_value)  
+        user_value = int(user_value) if is_int else float(user_value)
                 
         if user_value < min_value or user_value > max_value:
             user_value = input("Invalid input, please insert a valid one (min: " + str(min_value) + ", max: " + str(max_value) + "): ")
@@ -177,15 +174,14 @@ def personalized_input_for_ga(value, default_value, is_int, min_value, max_value
 # function that given an input file returns the values for population size, number of generations, mutation and swap
 # probabilities and population variation
 def get_parameters_for_ga(option):
-    if option == 1:             # "./dataset/a_example.txt"
-        population_size = 50
-        generations = 1000
-        mutation_prob = 0.2
-        swap_prob = 0.2
-        population_variation = 0.2
+    population_size = 50        # "./dataset/a_example.txt"
+    generations = 1000
+    mutation_prob = 0.2
+    swap_prob = 0.2
+    population_variation = 0.2
 
     # all the below values were chosen after a battery of tests
-    elif option == 2:           # "./dataset/b_read_on.txt"
+    if option == 2:             # "./dataset/b_read_on.txt"
         population_size = 50
         generations = 1000
         mutation_prob = 0.2
