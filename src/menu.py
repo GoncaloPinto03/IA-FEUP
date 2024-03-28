@@ -94,7 +94,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
         if choice == '1':
             print("You've selected Greedy Algorithm")
             t = datetime.datetime.now()
-            solution, score, scanned_books_dict = algorithms.greedy(B, L, D, book_scores, libraries)
+            score = algorithms.greedy(B, L, D, book_scores, libraries)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
@@ -103,13 +103,46 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '2':
             print("You've selected Local Search - First Neighbour Algorithm")
-            algorithms.ls_first_neighbour(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score1 = algorithms.ls_first_neighbor(B, L, D, book_scores, libraries)
+            score2 = algorithms.greedy(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score1)  # prints total score
+            if score1 > score2:
+                print("Found a better solution")
+            else:
+                print("Did not find a better solution")
+
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
+            
         elif choice == '3':
             print("You've selected Local Search - Best Neighbour Algorithm")
-            algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score1 = algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
+            score2 = algorithms.greedy(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score1)  # prints total score
+            
         elif choice == '4':
             print("You've selected Local Search - Random Neighbour Algorithm")
-            algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score1 = algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
+            score2 = algorithms.greedy(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score1)  # prints total score
+            
+
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
+            
         elif choice == '5':
             print("You've selected Simulated Annealing Algorithm")
             algorithms.simulated_annealing(B, L, D, book_scores, libraries)
