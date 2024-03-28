@@ -9,6 +9,9 @@ class Library:
     def __str__(self):
         return f"{self.name} library with {len(self.books)} books"
     
+    def get_books2(self):
+        return self.books
+    
     # get books that need to be scanned
     def get_books(self, days, scanned_books):
         remaining = days - self.signup_days

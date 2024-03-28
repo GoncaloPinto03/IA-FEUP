@@ -85,7 +85,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
         if choice == '1':
             print("You've selected Greedy Algorithm")
             t = datetime.datetime.now()
-            score = algorithms.greedy(B, L, D, book_scores, libraries)
+            score, solution = algorithms.greedy(B, L, D, book_scores, libraries)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
@@ -94,7 +94,14 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '2':
             print("You've selected Local Search - First Neighbour Algorithm")
-            algorithms.ls_first_neighbour(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score = algorithms.ls_first_neighbour(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '3':
             print("You've selected Local Search - Best Neighbour Algorithm")
             algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)

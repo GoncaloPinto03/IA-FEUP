@@ -223,9 +223,62 @@ def simulated_annealing(B, L, D, libraries, scores, n_days):
     return best_solution
 '''
 
+
 def ls_first_neighbour(B, L, D, book_scores, libraries):
-    # Implement the Local Search - First Neighbour algorithm
-    pass
+    # Initialize current solution
+    current_solution = initialize_solution(B, L, D, libraries)
+    current_score = calculate_score_neighbor(current_solution, book_scores, D)
+
+    # Main loop
+    while True:
+        # Generate a neighboring solution
+        neighbor_solution = generate_neighbor(current_solution)
+
+        # Calculate the score of the neighboring solution
+        neighbor_score = calculate_score_neighbor(neighbor_solution, book_scores, D)
+
+        # If the neighboring solution is better, update the current solution
+        if neighbor_score > current_score:
+            current_solution = neighbor_solution
+            current_score = neighbor_score
+        else:
+            # If no improvement found, break the loop
+            break
+
+    return current_score
+
+def initialize_solution(B, L, D, libraries):
+    # This function initializes a solution by randomly selecting libraries to sign up
+    # and scanning books from those libraries
+    # You can implement this based on your specific requirements and constraints
+    
+    # Example:
+    selected_libraries = random.sample(libraries, min(len(libraries), D))  # Randomly select libraries up to D
+    return selected_libraries
+
+def generate_neighbor(solution):
+    # This function generates a neighboring solution by modifying the current solution
+    # You can implement this based on your specific requirements and constraints
+    
+    # Example:
+    new_solution = solution[:]  # Create a copy of the current solution
+    # Modify the solution, e.g., swap libraries, remove/add books, etc.
+    # Implement your logic here
+    
+    return new_solution
+
+
+def calculate_score_neighbor(solution, book_scores, remaining_days):
+    total_score = 0
+    scanned_books = set()  # Initialize scanned books set
+    for library in solution:
+        for book_id in library.get_books(remaining_days, scanned_books):
+            total_score += book_scores[book_id]
+            scanned_books.add(book_id)  # Update scanned books set
+    return total_score
+
+
+
 
 def ls_best_neighbour(B, L, D, book_scores, libraries):
     # Implement the Local Search - Best Neighbour algorithm
