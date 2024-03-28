@@ -86,14 +86,14 @@ def selectFile():
             # for lib in libraries:
             #     lib.display_details()  # Print details of each library
             # Pass B, L, D, book_scores, libraries to your algorithms if needed
-            selectAlgorithm(B, L, D, book_scores, libraries)
+            selectAlgorithm(B, L, D, book_scores, libraries, choice)
         elif choice == '7':
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 # select algorithm function
-def selectAlgorithm(B, L, D, book_scores, libraries):
+def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
     while True:
         drawSelectAlgorithm()
         choice = input("\nEnter your choice: ")
@@ -121,7 +121,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             algorithms.simulated_annealing(B, L, D, book_scores, libraries)
         elif choice == '6':
             print("You've selected Genetic Algorithm")
-            algorithms.genetic(B, L, D, book_scores, libraries)
+            algorithms.genetic_options(book_scores, libraries, ga_option)
         elif choice == '7':
             break
         else:

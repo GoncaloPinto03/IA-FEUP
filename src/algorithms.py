@@ -90,9 +90,7 @@ def simulated_annealing(B, L, D, book_scores, libraries):
     # Implement the Simulated Annealing algorithm
     pass
 
-def genetic(B, L, D, book_scores, libraries):
-    # Implement the Genetic algorithm
-    pass
+
 
 def bestScores():
     # Implement the best scores algorithm
@@ -123,3 +121,104 @@ def choose_best_score(days, libraries, scores, scanned_books):
         return -1, best_books
 
     return best_lib, best_books
+
+
+# def genetic(B, L, D, book_scores, libraries):
+#     # Implement the Genetic algorithm
+#     pass
+
+def genetic(population, book_scores, libraries, mutation_prob, swap_prob, population_variation):
+    # Implement the Genetic algorithm
+    pass
+
+# call this function in menu
+def genetic_options(book_scores, libraries, option):
+    options = {1: "Use default values", 2: "Personalized values"}
+    message = "\nGenetic algorithm uses default values.\nDo you want to continue with the default ones or do you want to personalize the values?\n"
+    print(message)
+    for k, v in options.items():
+        print(str(k) + "| " + v1)
+    
+    while True:
+        choice = int(input("\nChoose the values to use in genetic algorithm: "))
+        if (choice == 1): 
+            # call genetic algorithm with default values
+            population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters_for_ga(option)
+            return genetic(population_size, book_scores, libraries, mutation_prob, swap_prob, population_variation)
+
+        elif (choice == 2):
+            # call genetic algorithm with personalized values
+            population_size = personalized_input_for_ga("\nPopulation Size: ", population_size, True, 6, 100)
+            generations = personalized_input_for_ga("\nNumber of Generations: ", generations, True, 10, 1000)
+            mutation_prob = personalized_input_for_ga("\nMutation Probability: ", mutation_prob, False, 0, 1)
+            swap_prob = personalized_input_for_ga("\nSwap Probability: ", swap_prob, False, 0, 1)
+            population_variation = personalized_input_for_ga("\nPopulation Variation: ", population_variation, False, 0, 1)
+            return genetic(population_size, book_scores, libraries, mutation_prob, swap_prob, population_variation)
+        else: 
+            print("Invalid option. Choose a valid one.")
+        
+            
+def personalized_input_for_ga(value, default_value, is_int, min_value, max_value):
+    user_value = input(value + "(default = )" + str(default_value) + ":" )
+    
+    while True:
+        if is_int:
+            user_value = int(user_value)
+        else:
+            user_value = float(user_value)  
+                
+        if user_value < min_value or user_value > max_value:
+            user_value = input("Invalid input, please insert a valid one (min: " + str(min_value) + ", max: " + str(max_value) + "): ")
+        else:
+            break
+
+    return user_value
+
+# function that given an input file returns the values for population size, number of generations, mutation and swap
+# probabilities and population variation
+def get_parameters_for_ga(option):
+    if option == 1:             # "./dataset/a_example.txt"
+        population_size = 50
+        generations = 1000
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+
+    # all the below values were chosen after a battery of tests
+    elif option == 2:           # "./dataset/b_read_on.txt"
+        population_size = 50
+        generations = 1000
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+        
+    elif option == 3:           # "./dataset/c_incunabula.txt"
+        population_size = 10
+        generations = 10
+        mutation_prob = 0.05
+        swap_prob = 0.05
+        population_variation = 0.01
+        
+    elif option == 4:           # "./dataset/d_tough_choices.txt"
+        population_size = 10
+        generations = 10
+        mutation_prob = 0.05
+        swap_prob = 0.05
+        population_variation = 0.001
+        
+    elif option == 5:           # "./dataset/e_so_many_books.txt"
+        population_size = 20
+        generations = 500
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+        
+    elif option == 6:           # "./dataset/f_libraries_of_the_world.txt"
+        population_size = 20
+        generations = 100
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+
+    return population_size, generations, mutation_prob, swap_prob, population_variation
+    
