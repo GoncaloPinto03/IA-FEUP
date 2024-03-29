@@ -47,9 +47,6 @@ def greedy(B, L, D, book_scores, libraries):
     '''
     return total_score
 
-
-
-
 def ls_first_neighbor(B, L, D, book_scores, libraries):
     # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
     for library in libraries:
