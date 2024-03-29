@@ -185,13 +185,81 @@ def score_solution(solution, D):
                 books_scanned.add(book.id)
     return score
 
-def ls_first_neighbour(B, L, D, book_scores, libraries):
-    # Implement the Local Search - First Neighbour algorithm
-    pass
+def ls_first_neighbor(B, L, D, book_scores, libraries):
+    # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
+    for library in libraries:
+        library.sort_books()  # Sort books in each library based on scores
+    libraries.sort(key=lambda lib: sum(book.score for book in lib.books) / lib.signup_days, reverse=True)
+
+    # Initialize the current solution
+    current_libraries = libraries[:]  # Make a copy of libraries
+    current_score = greedy(B, L, D, book_scores, current_libraries)  # Score of the current solution
+    # current_score = 0
+
+    # Calculate the initial score
+    library_scores = [sum(book.score for book in library.books) for library in libraries]
+
+    # Iterate over the libraries to find the first neighbor
+    for i in range(len(current_libraries)):
+        # Calculate the score of the current solution
+        current_library_score = library_scores[i]
+        
+        # Calculate the score of the neighbor solution by removing the i-th library
+        if len(current_libraries) > 1:
+            neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
+            neighbor_score = sum(sum(book.score for book in library.books) for library in neighbor_libraries) 
+            print (neighbor_score)
+        else:
+            neighbor_score = 0  # No neighbor
+        
+        # Compare the scores
+        if neighbor_score > best_neighbor_score:
+            best_neighbor_libraries = neighbor_libraries
+            best_neighbor_score = neighbor_score
+            return best_neighbor_score
+
+    return current_score
 
 def ls_best_neighbour(B, L, D, book_scores, libraries):
-    # Implement the Local Search - Best Neighbour algorithm
-    pass
+    # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
+    for library in libraries:
+        library.sort_books()  # Sort books in each library based on scores
+    libraries.sort(key=lambda lib: sum(book.score for book in lib.books) / lib.signup_days, reverse=True)
+    
+    # Initialize the current solution
+    current_libraries = libraries[:]  # Make a copy of libraries
+    current_score = greedy(B, L, D, book_scores, current_libraries)  # Score of the current solution
+    # current_score = 0
+
+    # Calculate the initial score
+    library_scores = [sum(book.score for book in library.books) for library in libraries]
+
+    # Initialize variables to track the best neighbor
+    best_neighbor_libraries = None
+    best_neighbor_score = current_score
+
+    # Iterate over the libraries to find the best neighbor
+    for i in range(len(current_libraries)):
+        # Calculate the score of the current solution
+        current_library_score = library_scores[i]
+    
+        # Calculate the score of the neighbor solution by removing the i-th library
+        if len(current_libraries) > 1:
+            neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
+            neighbor_score = sum(sum(book.score for book in library.books) for library in neighbor_libraries) 
+            print (neighbor_score)
+        else:
+            neighbor_score = 0  # No neighbor
+        
+        # Compare the scores
+        if neighbor_score > best_neighbor_score:
+            print("neighbor_score",neighbor_score)
+            # Update the best neighbor
+            best_neighbor_libraries = neighbor_libraries
+            best_neighbor_score = neighbor_score
+
+    # Return the best score found
+    return best_neighbor_score
 
 def ls_random_neighbour(B, L, D, book_scores, libraries):
     # Implement the Local Search - Random Neighbour algorithm
