@@ -31,7 +31,7 @@ def greedy(B, L, D, book_scores, libraries):
         signup_process.append((library, books_to_scan))
     return total_score
 
-def simulated_annealing(B, L, D, book_scores, libraries, initial_temperature=1000, cooling_rate=0.95, iterations=1000):
+def simulated_annealing2(B, L, D, book_scores, libraries, initial_temperature=100, cooling_rate=0.95, iterations=1000):
     current_solution = generate_random_solution(B, L, D, libraries)
     current_score = calculate_score(current_solution, book_scores, libraries, D)
 
@@ -41,21 +41,34 @@ def simulated_annealing(B, L, D, book_scores, libraries, initial_temperature=100
     temperature = initial_temperature
 
     for i in range(iterations):
+        # Cooling schedule
+        temperature = temp_sched(temperature, cooling_rate)
+
+        # Generate a random neighboring solution
         new_solution = generate_neighbour_solution(current_solution, libraries)
+
+        # Calculate the score for the new solution
         new_score = calculate_score(new_solution, book_scores, libraries, D)
 
-        delta_score = new_score - current_score
+        # Evaluate the energy difference between the current and new solutions
+        delta_E = new_score - current_score
 
-        if delta_score > 0 or random.random() < math.exp(delta_score / temperature):
+        # If the new solution is better or with a probability based on temperature, accept it
+        if delta_E > 0 or Prob(current_score, new_score, temperature) >= random.random():
             current_solution = new_solution
             current_score = new_score
 
+        # Update the best solution if needed
         if current_score > best_score:
+            best_solution = current_solution
             best_score = current_score
 
-        temperature *= cooling_rate
-
     return best_score
+
+def temp_sched(temperature, cooling_rate):
+    # Adjust temperature here (e.g., geometric cooling, linear cooling, etc.)
+    # Example: geometric cooling
+    return temperature * cooling_rate
 
 def generate_random_solution(B, L, D, libraries):
     days_remaining = D
@@ -89,6 +102,88 @@ def calculate_score(solution, book_scores, libraries, D):
             total_score += book_scores[book_id]
             scanned_books.add(book_id)
     return total_score
+
+def Prob(current_score, new_score, temperature):
+    # Calculate the probability of accepting the new solution given its performance change and the current temperature
+    return math.exp((new_score - current_score) / temperature)
+
+
+
+
+def simulated_annealing(B, L, D, book_scores, libraries):
+
+    current_solution = initial_solution(D, libraries)
+    current_score = score_solution(current_solution, D)
+    
+    T = 1.0
+    T_min = 0.001
+    alpha = 0.9
+
+    while T > T_min:
+        i = 1
+        while i <= 100:
+            new_solution = neighbor_solution(current_solution, libraries, D)
+            new_score = score_solution(new_solution, D)
+            
+            # Calculate change in score
+            delta = new_score - current_score
+            
+            # Acceptance probability
+            acceptance_probability = math.exp(delta / T) if delta < 0 else 1
+            
+            # Decide if we should accept the new solution
+            if acceptance_probability > random.random():
+                current_solution = new_solution
+                current_score = new_score
+            
+            i += 1
+        
+        T *= alpha  # Cool down the temperature
+
+    return current_score
+
+# Helper functions
+
+def initial_solution(D, libraries):
+    return [(library, []) for library in libraries if D - library.signup_days >= 0]
+
+
+def neighbor_solution(solution, libraries, D):
+    # Make a random change in the solution to generate a neighbor
+    if not solution:
+        return solution
+    
+    neighbor = solution[:]
+    idx = random.randrange(len(neighbor))
+    library, _ = neighbor[idx]
+    
+    # Randomly decide to change the order of the library signup or change the books
+    if random.random() < 0.5:
+        # Swap two libraries' positions
+        idx_swap = random.randrange(len(neighbor))
+        neighbor[idx], neighbor[idx_swap] = neighbor[idx_swap], neighbor[idx]
+    else:
+        # Change the books to scan in the library
+        random_books = random.sample(library.books, min(len(library.books), library.books_per_day * (D - library.signup_days)))
+        neighbor[idx] = (library, random_books)
+    
+    return neighbor
+
+def score_solution(solution, D):
+    score = 0
+    books_scanned = set()
+    days_remaining = D
+    for library, books in solution:
+        days_remaining -= library.signup_days
+        if days_remaining <= 0:
+            break
+        # Calculate how many books can actually be scanned
+        num_scanned_books = min(days_remaining * library.books_per_day, len(books))
+        for book in books[:num_scanned_books]:
+            if book.id not in books_scanned:
+                score += book.score
+                books_scanned.add(book.id)
+    return score
 
 def ls_first_neighbour(B, L, D, book_scores, libraries):
     # Implement the Local Search - First Neighbour algorithm
