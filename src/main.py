@@ -6,4 +6,4 @@ def main():
 
 if __name__ == "__main__":
     menu.runMainMenu()  # Call the menu when running main.py
-    main()  # Call the main function afterwards
+    # main()  # Call the main function afterwards
