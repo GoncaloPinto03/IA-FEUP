@@ -126,13 +126,49 @@ def choose_best_score(days, libraries, scores, scanned_books):
 #     pass
 
 #--------------------------------------------------------------------------------------
-def genetic(population, book_scores, libraries, mutation_prob, swap_prob, population_variation):
+def genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation):
     # Implement the Genetic algorithm
     # 1. initialize population (w/ greedy)
-    # 2. 
+    # 2. traverse generations and populations 
+    # 3. select parents
+    # 4. crossover
+    # 5. mutate
+    # 6. calculate best solution
     # NOTE: check in gpt if the best solution should be inside the for loop or not
+    
+    initial_population = initialize_population(population_size, len(libraries))
+    
+    for i in range(num_generations):
+        new_population = []
+        for _ in range(population_size):
+            parent1, parent2 = select_parents(initial_population, 2)
+    
+    
 
     pass
+
+
+# shuffles the libraries indices to create a random solution
+def initialize_population(population_size, num_libraries):
+    population = []
+    for _ in range(population_size):
+        solution = random.sample(range(num_libraries), num_libraries)
+        population.append(solution)
+    return population
+
+
+# tournament selection of parents by randomly choosing groups and select the best in those groups
+def select_parents(population, n):
+    p1 = random.sample(population, n)
+    parent1 = sorted(p1, key=lambda x: x.score, reverse=True)[0]
+    
+    # rest is the remaining population 
+    rest = [x for x in population if x not in p1]
+    p2 = random.sample(rest, n)
+    parent2 = sorted(p2, key=lambda x: x.score, reverse=True)[0]
+    
+    return parent1, parent2
+
 
 # call this function in menu
 def genetic_options(book_scores, libraries, option):
@@ -145,20 +181,21 @@ def genetic_options(book_scores, libraries, option):
             print(str(k) + "| " + v)
             
         choice = int(input("\nChoose the values to use in genetic algorithm: "))
-        population_size, generations, mutation_prob, swap_prob, population_variation = get_default_values_for_ga(option)
+        population_size, num_generations, mutation_prob, swap_prob, population_variation = get_default_values_for_ga(option)
         
         if (choice == 1): 
             # call genetic algorithm with default values
-            return genetic(population_size, book_scores, libraries, mutation_prob, swap_prob, population_variation)
+            return genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation)
 
         elif (choice == 2):
             # call genetic algorithm with personalized values
             population_size = personalized_input_for_ga("\nPopulation Size ", population_size, True, 6, 100)
-            generations = personalized_input_for_ga("\nNumber of Generations ", generations, True, 10, 1000)
+            num_generations = personalized_input_for_ga("\nNumber of Generations ", num_generations, True, 10, 1000)
             mutation_prob = personalized_input_for_ga("\nMutation Probability ", mutation_prob, False, 0, 1)
             swap_prob = personalized_input_for_ga("\nSwap Probability ", swap_prob, False, 0, 1)
             population_variation = personalized_input_for_ga("\nPopulation Variation ", population_variation, False, 0, 1)
-            return genetic(population_size, book_scores, libraries, mutation_prob, swap_prob, population_variation)
+            return genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation)
+        
         else: 
             print("Invalid option. Choose a valid one.\n")
         
