@@ -185,51 +185,54 @@ def score_solution(solution, D):
                 books_scanned.add(book.id)
     return score
 
-def ls_first_neighbor(B, L, D, book_scores, libraries):
+def ls_first_neighbour(B, L, D, book_scores, libraries):
     # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
     for library in libraries:
         library.sort_books()  # Sort books in each library based on scores
-    libraries.sort(key=lambda lib: sum(book.score for book in lib.books) / lib.signup_days, reverse=True)
-
+    libraries.sort(key=lambda lib: sum(book_scores[book.id] for book in lib.books) / lib.signup_days, reverse=True)
     # Initialize the current solution
     current_libraries = libraries[:]  # Make a copy of libraries
-    current_score = greedy(B, L, D, book_scores, current_libraries)  # Score of the current solution
-    # current_score = 0
+    current_score = 0
 
-    # Calculate the initial score
-    library_scores = [sum(book.score for book in library.books) for library in libraries]
+    # Initialize remaining days
+    remaining_days = D
 
     # Iterate over the libraries to find the first neighbor
-    for i in range(len(current_libraries)):
-        # Calculate the score of the current solution
-        current_library_score = library_scores[i]
-        
-        # Calculate the score of the neighbor solution by removing the i-th library
-        if len(current_libraries) > 1:
-            neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
-            neighbor_score = sum(sum(book.score for book in library.books) for library in neighbor_libraries) 
-            print (neighbor_score)
-        else:
-            neighbor_score = 0  # No neighbor
-        
-        # Compare the scores
-        if neighbor_score > best_neighbor_score:
-            best_neighbor_libraries = neighbor_libraries
-            best_neighbor_score = neighbor_score
-            return best_neighbor_score
+    for i, library in enumerate(current_libraries):
+        signup_days = library.signup_days
 
+        # Calculate the score of the neighbor solution by removing the i-th library
+        books_to_scan = min(library.books_per_day * remaining_days, len(library.books))
+        if books_to_scan > 0:
+            neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
+            neighbor_score = sum(book.score for book in library.books[:books_to_scan])
+            if neighbor_score > current_score:
+                # Update the current solution
+                current_score = neighbor_score
+                current_libraries = neighbor_libraries
+                print("Found a better neighbor")
+
+        # Update remaining days after signing up the current library
+        remaining_days -= signup_days
+
+        if remaining_days <= 0:
+            break
+
+    print("Did not find a better neighbor")
     return current_score
+
+
 
 def ls_best_neighbour(B, L, D, book_scores, libraries):
     # Sort libraries based on a heuristic: a ratio of the total score of books to the signup time.
     for library in libraries:
         library.sort_books()  # Sort books in each library based on scores
-    libraries.sort(key=lambda lib: sum(book.score for book in lib.books) / lib.signup_days, reverse=True)
+    libraries.sort(key=lambda lib: sum(book_scores[book.id] for book in lib.books) / lib.signup_days, reverse=True)
     
     # Initialize the current solution
     current_libraries = libraries[:]  # Make a copy of libraries
-    current_score = greedy(B, L, D, book_scores, current_libraries)  # Score of the current solution
-    # current_score = 0
+    #current_score = greedy(B, L, D, book_scores, current_libraries)  # Score of the current solution
+    current_score = 0
 
     # Calculate the initial score
     library_scores = [sum(book.score for book in library.books) for library in libraries]
@@ -238,27 +241,43 @@ def ls_best_neighbour(B, L, D, book_scores, libraries):
     best_neighbor_libraries = None
     best_neighbor_score = current_score
 
-    # Iterate over the libraries to find the best neighbor
+     # Initialize remaining days
+    remaining_days = D
+
+    scanned_books = []
+
+    # Iterate over the libraries to find the first neighbor
     for i in range(len(current_libraries)):
-        # Calculate the score of the current solution
-        current_library_score = library_scores[i]
-    
         # Calculate the score of the neighbor solution by removing the i-th library
-        if len(current_libraries) > 1:
-            neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
-            neighbor_score = sum(sum(book.score for book in library.books) for library in neighbor_libraries) 
-            print (neighbor_score)
+        if current_libraries[i].books_per_day * remaining_days < len(current_libraries[i].get_books(D,scanned_books)):
+            if len(current_libraries) > 1:
+                neighbor_libraries = current_libraries[:i] + current_libraries[i+1:]
+                neighbor_score = 0
+                for j in range(len(neighbor_libraries)):
+                    neighbor_score = sum(book.score for book in current_libraries[j].books)
+                if neighbor_score > current_score:
+                    # Update the best neighbor
+                    best_neighbor_libraries = neighbor_libraries
+                    best_neighbor_score = neighbor_score
+            else:
+                neighbor_score = 0
         else:
-            neighbor_score = 0  # No neighbor
+            print("Not enough days to scan books")
         
-        # Compare the scores
-        if neighbor_score > best_neighbor_score:
-            print("neighbor_score",neighbor_score)
-            # Update the best neighbor
-            best_neighbor_libraries = neighbor_libraries
-            best_neighbor_score = neighbor_score
+        # Calculate the days required to sign up the library
+        signup_days = current_libraries[i].signup_days
+
+        # Calculate the remaining days after signing up the current library
+        remaining_days -= signup_days
+
+        # Check if there are remaining days for scanning books
+        if remaining_days <= 0:
+            break
+
+
 
     # Return the best score found
+    print ("Did not find a better neighbor")
     return best_neighbor_score
 
 def ls_random_neighbour(B, L, D, book_scores, libraries):
