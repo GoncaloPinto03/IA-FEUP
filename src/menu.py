@@ -121,7 +121,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
             algorithms.simulated_annealing(B, L, D, book_scores, libraries)
         elif choice == '6':
             print("You've selected Genetic Algorithm")
-            algorithms.genetic_options(book_scores, libraries, ga_option)
+            algorithms.genetic_options(book_scores, libraries, ga_option, D)
         elif choice == '7':
             break
         else:

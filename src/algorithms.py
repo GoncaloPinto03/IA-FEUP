@@ -126,7 +126,7 @@ def choose_best_score(days, libraries, scores, scanned_books):
 #     pass
 
 #--------------------------------------------------------------------------------------
-def genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation):
+def genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation):
     # Implement the Genetic algorithm
     # 1. initialize population (w/ greedy)
     # 2. traverse generations and populations 
@@ -136,16 +136,48 @@ def genetic(book_scores, libraries, population_size, num_generations, mutation_p
     # 6. calculate best solution
     # NOTE: check in gpt if the best solution should be inside the for loop or not
     
-    initial_population = initialize_population(population_size, len(libraries))
+    population = initialize_population(population_size, len(libraries))
     
     for i in range(num_generations):
         new_population = []
         for _ in range(population_size):
-            parent1, parent2 = select_parents(initial_population, 2)
-    
-    
+            parents = select_parents(population, 2, D, book_scores, libraries)
+            print(parents)
+    #         offspring = crossover(parents)
+    #         offspring = mutate(offspring, mutation_rate)
+    #         new_population.append(offspring)
+    #     population = new_population
 
-    pass
+    # best_solution = max(population, key=lambda x: calculate_score(x, D, scores, libraries))
+    # best_score = calculate_score(best_solution, D, scores, libraries)
+    
+    # return best_solution, best_score
+
+
+
+
+
+def calculate_score(solution, D, scores, libraries):
+    total_score = 0
+    scanned_books = set()
+    day = 0
+    
+    for library_index in solution:
+        library = libraries[library_index]
+        day += library['signup_time']
+        
+        if day >= D:  # Stop if signup exceeds available days
+            break
+        remaining_days = D - day
+        books_to_scan = min(remaining_days * library['books_per_day'], len(library['books']))
+        
+        for book in library['books'][:books_to_scan]:
+            if book not in scanned_books:
+                total_score += scores[book]
+                scanned_books.add(book)
+                
+    return total_score
+
 
 
 # shuffles the libraries indices to create a random solution
@@ -158,20 +190,37 @@ def initialize_population(population_size, num_libraries):
 
 
 # tournament selection of parents by randomly choosing groups and select the best in those groups
-def select_parents(population, n):
-    p1 = random.sample(population, n)
-    parent1 = sorted(p1, key=lambda x: x.score, reverse=True)[0]
+# we could also randomly choose a group and pick the best two out of that group I guess
+# def select_parents(population, n):
+#     p1 = random.sample(population, n)
+#     parent1 = sorted(p1, key=lambda x: x.score, reverse=True)[0]
     
-    # rest is the remaining population 
-    rest = [x for x in population if x not in p1]
-    p2 = random.sample(rest, n)
-    parent2 = sorted(p2, key=lambda x: x.score, reverse=True)[0]
+#     # rest is the remaining population 
+#     rest = [x for x in population if x not in p1]
+#     p2 = random.sample(rest, n)
+#     parent2 = sorted(p2, key=lambda x: x.score, reverse=True)[0]
     
-    return parent1, parent2
+#     return parent1, parent2
+
+def select_parents(population, num_parents, D, scores, libraries):
+    parents = []
+    population_size = len(population)
+    
+    for _ in range(num_parents):
+        # Randomly select a subset of individuals (tournament)
+        tournament_size = min(5, population_size)  
+        tournament = random.sample(population, tournament_size)
+        
+        # Select the individual with the highest fitness (total score)
+        winner = max(tournament, key=lambda x: calculate_score(x, D, scores, libraries))
+        parents.append(winner)
+        
+    return parents
+
 
 
 # call this function in menu
-def genetic_options(book_scores, libraries, option):
+def genetic_options(book_scores, libraries, option, D):
     options = {1: "Use default values", 2: "Personalize values"}
     message = "\nGenetic algorithm uses default values.\nDo you want to continue with the default ones or do you want to personalize the values?\n"
     print(message)
@@ -185,7 +234,7 @@ def genetic_options(book_scores, libraries, option):
         
         if (choice == 1): 
             # call genetic algorithm with default values
-            return genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation)
+            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation)
 
         elif (choice == 2):
             # call genetic algorithm with personalized values
@@ -194,7 +243,7 @@ def genetic_options(book_scores, libraries, option):
             mutation_prob = personalized_input_for_ga("\nMutation Probability ", mutation_prob, False, 0, 1)
             swap_prob = personalized_input_for_ga("\nSwap Probability ", swap_prob, False, 0, 1)
             population_variation = personalized_input_for_ga("\nPopulation Variation ", population_variation, False, 0, 1)
-            return genetic(book_scores, libraries, population_size, num_generations, mutation_prob, swap_prob, population_variation)
+            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation)
         
         else: 
             print("Invalid option. Choose a valid one.\n")
