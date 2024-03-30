@@ -143,18 +143,31 @@ def genetic(book_scores, libraries, D, population_size, num_generations, mutatio
         for _ in range(population_size):
             parents = select_parents(population, 2, D, book_scores, libraries)
             print(parents)
-    #         offspring = crossover(parents)
-    #         offspring = mutate(offspring, mutation_rate)
-    #         new_population.append(offspring)
-    #     population = new_population
+            # offspring = crossover(parents)
+            offspring = mutate(offspring, mutation_prob, swap_prob)
+            new_population.append(offspring)
+        population = new_population
 
-    # best_solution = max(population, key=lambda x: calculate_score(x, D, scores, libraries))
-    # best_score = calculate_score(best_solution, D, scores, libraries)
+    best_solution = max(population, key=lambda x: calculate_score(x, D, book_scores, libraries))
+    best_score = calculate_score(best_solution, D, book_scores, libraries)
     
-    # return best_solution, best_score
+    return best_solution, best_score
 
 
 
+def mutate(solution, mutation_rate, swap_rate):
+    if random.random() < mutation_rate:
+        i1, i2 = random.sample(range(len(solution), 2))
+        i1, i2 = mutate_swap(i1, i2, swap_rate)
+        
+    return solution
+
+
+def mutate_swap(i1, i2, swap_rate):
+    if random.random() < swap_rate: 
+        i1, i2 = i2, i1
+        
+    return i1, i2
 
 
 def calculate_score(solution, D, scores, libraries):
@@ -182,10 +195,15 @@ def calculate_score(solution, D, scores, libraries):
 
 # shuffles the libraries indices to create a random solution
 def initialize_population(population_size, num_libraries):
+    # print(population_size)
+    # print(num_libraries)
     population = []
     for _ in range(population_size):
         solution = random.sample(range(num_libraries), num_libraries)
+        print(solution)
         population.append(solution)
+    # print("-------------------")
+
     return population
 
 
@@ -216,6 +234,17 @@ def select_parents(population, num_parents, D, scores, libraries):
         parents.append(winner)
         
     return parents
+
+
+# def select_parents(population, fitness_scores):
+#     # Select individuals from the population for mating
+#     # You can use different selection strategies here
+#     # Example: Roulette wheel selection
+#     total_fitness = sum(fitness_scores)
+#     probabilities = [fitness / total_fitness for fitness in fitness_scores]
+#     parents = np.random.choice(population, size=2, p=probabilities, replace=False)
+#     return parents
+
 
 
 
