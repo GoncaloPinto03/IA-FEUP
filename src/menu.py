@@ -89,7 +89,6 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
-
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '2':
@@ -99,15 +98,21 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
-
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '3':
             print("You've selected Local Search - Best Neighbour Algorithm")
-            algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
+            t = datetime.datetime.now()
+            score = algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '4':
             print("You've selected Local Search - Random Neighbour Algorithm")
             algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
+            print("NOT IMPLEMENTED YET!")
         elif choice == '5':
             print("You've selected Simulated Annealing Algorithm")
             t = datetime.datetime.now()
@@ -115,21 +120,26 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
-
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '6':
             print("You've selected Genetic Algorithm")
             algorithms.genetic(B, L, D, book_scores, libraries)
+            print("NOT IMPLEMENTED YET!")
         elif choice == '7':
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 
-def option2():
-    print("You've selected Option 2")
-    # Add functionality for Option 2 here
+def bestScores():
+    print("Best scores for each file:")
+    print("a_example.txt: 21, using Greedy Algorithm")
+    print("b_read_on.txt: 5822900, using Greedy Algorithm")
+    print("c_incunabula.txt: XXX, using Greedy Algorithm")
+    print("d_tough_choices.txt: XXX, using Greedy Algorithm")
+    print("e_so_many_books.txt: XXX, using Greedy Algorithm")
+    print("f_libraries_of_the_world.txt: XXX, using Greedy Algorithm")
 
 # credits function
 def credits():
@@ -147,7 +157,7 @@ def runMainMenu():
         if choice == '1':
             selectFile()
         elif choice == '2':
-            algorithms.bestScores()
+            bestScores()
         elif choice == '3':
             credits()
         elif choice == '4':
