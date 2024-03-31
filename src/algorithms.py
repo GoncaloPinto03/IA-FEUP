@@ -137,19 +137,19 @@ def genetic(book_scores, libraries, D, population_size, num_generations, mutatio
     # NOTE: check in gpt if the best solution should be inside the for loop or not
     
     population = initialize_population(population_size, len(libraries))
+    print("population length = " + str(len(population)))     # 50 para o primeiro ficheiro
     
     for i in range(num_generations):
         new_population = []
         for _ in range(population_size):
             parents = select_parents(population, 2, D, book_scores, libraries)
-            print(parents)
-            # offspring = crossover(parents)
+            offspring = crossover(parents)
             offspring = mutate(offspring, mutation_prob, swap_prob)
             new_population.append(offspring)
         population = new_population
 
-    best_solution = max(population, key=lambda x: calculate_score(x, D, book_scores, libraries))
-    best_score = calculate_score(best_solution, D, book_scores, libraries)
+    best_solution = max(population, key=lambda x: choose_best_score(x, D, book_scores, libraries))
+    best_score = choose_best_score(best_solution, D, book_scores, libraries)
     
     return best_solution, best_score
 
@@ -157,7 +157,7 @@ def genetic(book_scores, libraries, D, population_size, num_generations, mutatio
 
 def mutate(solution, mutation_rate, swap_rate):
     if random.random() < mutation_rate:
-        i1, i2 = random.sample(range(len(solution), 2))
+        i1, i2 = random.sample(range(len(solution)), 2)
         i1, i2 = mutate_swap(i1, i2, swap_rate)
         
     return solution
@@ -170,26 +170,59 @@ def mutate_swap(i1, i2, swap_rate):
     return i1, i2
 
 
-def calculate_score(solution, D, scores, libraries):
-    total_score = 0
-    scanned_books = set()
-    day = 0
+def crossover(parents):
+    crossover_point = random.randint(1, len(parents[0]) - 1)
+    offspring = parents[0][:crossover_point] + [gene for gene in parents[1] if gene not in parents[0][:crossover_point]]
     
-    for library_index in solution:
-        library = libraries[library_index]
-        day += library['signup_time']
+    return offspring
+
+# We could need this one later
+# def crossover(parent1, parent2):
+#     # Perform order crossover (OX) to create offspring
+#     num_books = len(parent1)
+    
+#     # Select two random crossover points
+#     point1, point2 = sorted(np.random.choice(num_books, size=2, replace=False))
+    
+#     # Initialize offspring with parent1's order between the crossover points
+#     offspring = [-1] * num_books
+#     offspring[point1:point2] = parent1[point1:point2]
+    
+#     # Fill in the remaining positions with genes from parent2, preserving order
+#     remaining_genes = [gene for gene in parent2 if gene not in offspring]
+#     remaining_index = 0
+#     for i in range(num_books):
+#         if offspring[i] == -1:
+#             offspring[i] = remaining_genes[remaining_index]
+#             remaining_index += 1
+    
+#     return offspring
+
+
+
+
+
+# def calculate_score(solution, D, scores, libraries):
+#     total_score = 0
+#     scanned_books = set()
+#     day = 0
+    
+#     for library_index in solution:
+#         library = libraries[library_index]
+#         day += library['signup_time']
         
-        if day >= D:  # Stop if signup exceeds available days
-            break
-        remaining_days = D - day
-        books_to_scan = min(remaining_days * library['books_per_day'], len(library['books']))
+#         if day >= D:  # Stop if signup exceeds available days
+#             break
+#         remaining_days = D - day
+#         books_to_scan = min(remaining_days * library['books_per_day'], len(library['books']))
         
-        for book in library['books'][:books_to_scan]:
-            if book not in scanned_books:
-                total_score += scores[book]
-                scanned_books.add(book)
+#         for book in library['books'][:books_to_scan]:
+#             if book not in scanned_books:
+#                 total_score += scores[book]
+#                 scanned_books.add(book)
                 
-    return total_score
+#     return total_score
+
 
 
 
@@ -224,17 +257,19 @@ def select_parents(population, num_parents, D, scores, libraries):
     parents = []
     population_size = len(population)
     
+    # se corrermos este print aparecem todos os elementos de libraries e os elementos sao todos iguais ns pq
+    # print(libraries)                 
+    
     for _ in range(num_parents):
         # Randomly select a subset of individuals (tournament)
         tournament_size = min(5, population_size)  
         tournament = random.sample(population, tournament_size)
         
         # Select the individual with the highest fitness (total score)
-        winner = max(tournament, key=lambda x: calculate_score(x, D, scores, libraries))
+        winner = max(tournament, key=lambda x: choose_best_score(D, libraries, scores, x))
         parents.append(winner)
         
     return parents
-
 
 # def select_parents(population, fitness_scores):
 #     # Select individuals from the population for mating
@@ -246,6 +281,57 @@ def select_parents(population, num_parents, D, scores, libraries):
 #     return parents
 
 
+# Try with this code snippet (3 functions below)
+# --------------------------------------------------------------------
+# def select_parents(population, num_parents, libraries):
+#     if len(population) < num_parents:
+#         raise ValueError("Population size is smaller than the number of parents to select.")
+
+#     # Calculate fitness values for each solution in the population
+#     fitness_values = [calculate_fitness(solution, libraries) for solution in population]
+
+#     # Normalize fitness values to probabilities
+#     total_fitness = sum(fitness_values)
+    
+#     # If all fitness values are 0, assign equal probabilities to all solutions
+#     if total_fitness == 0:
+#         parent_probabilities = [1 / len(population)] * len(population)
+#     else:
+#         parent_probabilities = [fitness / total_fitness for fitness in fitness_values]
+
+#     parents = []
+#     for _ in range(num_parents):
+#         parent_idx = roulette_wheel_selection(parent_probabilities)
+#         parents.append(population[parent_idx])
+#     return parents
+
+
+# def calculate_fitness(solution, libraries):
+#     # Here, you directly evaluate the fitness of each solution
+#     # You can implement the fitness calculation based on your problem's requirements
+#     # For example, you could calculate the total score of books selected in the solution
+#     total_score = 0
+#     for library_idx in solution:
+#         # Access the library and calculate its score or any other relevant metric
+#         library = libraries[library_idx]
+#         # Perform necessary calculations to determine the fitness of the solution
+#         # For instance, you could sum up the scores of books selected from this library
+#         total_score += sum(book.score for book in library.books)
+        
+#     return total_score
+
+
+# def roulette_wheel_selection(probabilities):
+#     r = random.random()
+#     cumulative_probability = 0
+    
+#     for i, prob in enumerate(probabilities):
+#         cumulative_probability += prob
+#         if r <= cumulative_probability:
+#             return i
+        
+#     return len(probabilities) - 1
+# --------------------------------------------------------------------
 
 
 # call this function in menu
