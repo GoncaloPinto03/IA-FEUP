@@ -36,10 +36,9 @@ def drawSelectAlgorithm():
     print("1| Greedy")
     print("2| Local Search - First Neighbour")
     print("3| Local Search - Best Neighbour")
-    print("4| Local Search - Random Neighbour")
-    print("5| Simulated Annealing")
-    print("6| Genetic")
-    print("7| Go back")
+    print("4| Simulated Annealing")
+    print("5| Genetic")
+    print("6| Go back")
     print("________________________\n")
 
 def read_input_file(input_file):
@@ -110,10 +109,6 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '4':
-            print("You've selected Local Search - Random Neighbour Algorithm")
-            algorithms.ls_random_neighbour(B, L, D, book_scores, libraries)
-            print("NOT IMPLEMENTED YET!")
-        elif choice == '5':
             print("You've selected Simulated Annealing Algorithm")
             t = datetime.datetime.now()
             score = algorithms.simulated_annealing(B, L, D, book_scores, libraries)
@@ -122,7 +117,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
             print("-----------------------------")
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
-        elif choice == '6':
+        elif choice == '5':
             print("You've selected Genetic Algorithm")
             t = datetime.datetime.now()
             score = algorithms.genetic_options(book_scores, libraries, ga_option, D)
@@ -132,10 +127,10 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
 
             print("Score:", score)  # prints total score
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
-        elif choice == '7':
+        elif choice == '6':
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 7.")
+            print("Invalid choice. Please enter a number between 1 and 6.")
 
 
 def bestScores():
