@@ -71,14 +71,14 @@ def selectFile():
             input_file = files[int(choice) - 1]
             print(f"You've selected {input_file}")
             B, L, D, book_scores, libraries = read_input_file(input_file)
-            selectAlgorithm(B, L, D, book_scores, libraries)
+            selectAlgorithm(B, L, D, book_scores, libraries, choice)
         elif choice == '7':
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 # select algorithm function
-def selectAlgorithm(B, L, D, book_scores, libraries):
+def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
     while True:
         drawSelectAlgorithm()
         choice = input("\nEnter your choice: ")
@@ -124,8 +124,14 @@ def selectAlgorithm(B, L, D, book_scores, libraries):
             print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '6':
             print("You've selected Genetic Algorithm")
-            algorithms.genetic(B, L, D, book_scores, libraries)
-            print("NOT IMPLEMENTED YET!")
+            t = datetime.datetime.now()
+            score = algorithms.genetic_options(book_scores, libraries, ga_option, D)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
         elif choice == '7':
             break
         else:
