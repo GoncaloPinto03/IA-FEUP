@@ -245,7 +245,9 @@ def genetic_options(book_scores, libraries, option, D):
             num_generations = personalized_input_for_ga("Number of Generations", num_generations, True, 10, 1000)
             mutation_prob = personalized_input_for_ga("Mutation Probability", mutation_prob, False, 0, 1)
             swap_prob = personalized_input_for_ga("Swap Probability", swap_prob, False, 0, 1)
-            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob)
+            population_variation = personalized_input_for_ga("Population Variation", population_variation, False, 0, 1)
+
+            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation)
         
         else: 
             print("Invalid option. Choose a valid one.\n")    
@@ -266,6 +268,7 @@ def personalized_input_for_ga(value, default_value, is_int, min_value, max_value
 # function that given an input file returns the values for population size, number of generations, mutation and swap
 # probabilities and population variation
 def get_default_values_for_ga(option):
+    option = int(option)
     print (option)
     if option == 1:
         return (50, 1000, 0.2, 0.2, 0.2)
