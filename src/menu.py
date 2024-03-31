@@ -121,7 +121,15 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
             algorithms.simulated_annealing(B, L, D, book_scores, libraries)
         elif choice == '6':
             print("You've selected Genetic Algorithm")
-            algorithms.genetic_options(book_scores, libraries, ga_option, D)
+            t = datetime.datetime.now()
+            score = algorithms.genetic_options(book_scores, libraries, ga_option, D)
+            print("\n-----------------------------")
+            print("         Solution")
+            print("-----------------------------")
+
+            print("Score:", score)  # prints total score
+            print("Elapsed Time:", str(get_elapsed_time(t)))  # prints elapsed time
+            
         elif choice == '7':
             break
         else:

@@ -134,10 +134,8 @@ def genetic(book_scores, libraries, D, population_size, num_generations, mutatio
     # 4. crossover
     # 5. mutate
     # 6. calculate best solution
-    # NOTE: check in gpt if the best solution should be inside the for loop or not
     
     population = initialize_population(population_size, len(libraries))
-    print("population length = " + str(len(population)))     # 50 para o primeiro ficheiro
     
     for i in range(num_generations):
         new_population = []
@@ -146,22 +144,21 @@ def genetic(book_scores, libraries, D, population_size, num_generations, mutatio
             offspring = crossover(parents)
             offspring = mutate(offspring, mutation_prob, swap_prob)
             new_population.append(offspring)
+            print(f"Generation {i + 1} of {num_generations} - Best score: {choose_best_score(D, libraries, book_scores, offspring)}")
         population = new_population
 
-    best_solution = max(population, key=lambda x: choose_best_score(x, D, book_scores, libraries))
-    best_score = choose_best_score(best_solution, D, book_scores, libraries)
+    best_solution = max(population, key=lambda x: choose_best_score(D, libraries, book_scores, x))
+    best_score = choose_best_score(D, libraries, book_scores, best_solution)
     
-    return best_solution, best_score
-
-
+    return best_score
 
 def mutate(solution, mutation_rate, swap_rate):
     if random.random() < mutation_rate:
         i1, i2 = random.sample(range(len(solution)), 2)
         i1, i2 = mutate_swap(i1, i2, swap_rate)
+        solution[i1], solution[i2] = solution[i2], solution[i1]
         
     return solution
-
 
 def mutate_swap(i1, i2, swap_rate):
     if random.random() < swap_rate: 
@@ -169,200 +166,89 @@ def mutate_swap(i1, i2, swap_rate):
         
     return i1, i2
 
-
 def crossover(parents):
     crossover_point = random.randint(1, len(parents[0]) - 1)
     offspring = parents[0][:crossover_point] + [gene for gene in parents[1] if gene not in parents[0][:crossover_point]]
     
     return offspring
 
-# We could need this one later
-# def crossover(parent1, parent2):
-#     # Perform order crossover (OX) to create offspring
-#     num_books = len(parent1)
-    
-#     # Select two random crossover points
-#     point1, point2 = sorted(np.random.choice(num_books, size=2, replace=False))
-    
-#     # Initialize offspring with parent1's order between the crossover points
-#     offspring = [-1] * num_books
-#     offspring[point1:point2] = parent1[point1:point2]
-    
-#     # Fill in the remaining positions with genes from parent2, preserving order
-#     remaining_genes = [gene for gene in parent2 if gene not in offspring]
-#     remaining_index = 0
-#     for i in range(num_books):
-#         if offspring[i] == -1:
-#             offspring[i] = remaining_genes[remaining_index]
-#             remaining_index += 1
-    
-#     return offspring
-
-
-
-
-
-# def calculate_score(solution, D, scores, libraries):
-#     total_score = 0
-#     scanned_books = set()
-#     day = 0
-    
-#     for library_index in solution:
-#         library = libraries[library_index]
-#         day += library['signup_time']
-        
-#         if day >= D:  # Stop if signup exceeds available days
-#             break
-#         remaining_days = D - day
-#         books_to_scan = min(remaining_days * library['books_per_day'], len(library['books']))
-        
-#         for book in library['books'][:books_to_scan]:
-#             if book not in scanned_books:
-#                 total_score += scores[book]
-#                 scanned_books.add(book)
-                
-#     return total_score
-
-
-
-
-# shuffles the libraries indices to create a random solution
 def initialize_population(population_size, num_libraries):
-    # print(population_size)
-    # print(num_libraries)
     population = []
     for _ in range(population_size):
         solution = random.sample(range(num_libraries), num_libraries)
-        print(solution)
         population.append(solution)
-    # print("-------------------")
-
+    
     return population
 
-
-# tournament selection of parents by randomly choosing groups and select the best in those groups
-# we could also randomly choose a group and pick the best two out of that group I guess
-# def select_parents(population, n):
-#     p1 = random.sample(population, n)
-#     parent1 = sorted(p1, key=lambda x: x.score, reverse=True)[0]
-    
-#     # rest is the remaining population 
-#     rest = [x for x in population if x not in p1]
-#     p2 = random.sample(rest, n)
-#     parent2 = sorted(p2, key=lambda x: x.score, reverse=True)[0]
-    
-#     return parent1, parent2
-
-def select_parents(population, num_parents, D, scores, libraries):
+def select_parents(population, num_parents, D, book_scores, libraries):
     parents = []
     population_size = len(population)
     
-    # se corrermos este print aparecem todos os elementos de libraries e os elementos sao todos iguais ns pq
-    # print(libraries)                 
-    
     for _ in range(num_parents):
-        # Randomly select a subset of individuals (tournament)
-        tournament_size = min(5, population_size)  
+        tournament_size = min(5, population_size)
         tournament = random.sample(population, tournament_size)
-        
-        # Select the individual with the highest fitness (total score)
-        winner = max(tournament, key=lambda x: choose_best_score(D, libraries, scores, x))
+        winner = max(tournament, key=lambda x: choose_best_score(D, libraries, book_scores, x))
         parents.append(winner)
         
     return parents
 
-# def select_parents(population, fitness_scores):
-#     # Select individuals from the population for mating
-#     # You can use different selection strategies here
-#     # Example: Roulette wheel selection
-#     total_fitness = sum(fitness_scores)
-#     probabilities = [fitness / total_fitness for fitness in fitness_scores]
-#     parents = np.random.choice(population, size=2, p=probabilities, replace=False)
-#     return parents
+def choose_best_score(D, libraries, book_scores, solution):
+    total_score = 0
+    scanned_books = set()  # Keep track of scanned books to avoid counting duplicates
+    day = 0  # Initialize the day counter
+
+    # Iterate through libraries in the solution
+    for library_index in solution:
+        library = libraries[library_index]
+        signup_days = library.get_signup_days()
+
+        # Update the day counter after accounting for library signup time
+        day += signup_days
+
+        if day >= D:
+            break  # Stop processing if the signup time exceeds the available days
+
+        remaining_days = D - day  # Calculate remaining days after signup
+
+        # Determine the number of books that can be scanned from this library within remaining days
+        books_to_scan = min(remaining_days * library.get_books_per_day(), len(library.books))
+
+        # Iterate through books in the library
+        for book in library.books[:books_to_scan]:
+            if book.id not in scanned_books:  # Check if the book hasn't been scanned yet
+                total_score += book_scores[book.id]  # Add the score of the book to the total score
+                scanned_books.add(book.id)  # Add the book to the set of scanned books
+
+    return total_score
 
 
-# Try with this code snippet (3 functions below)
-# --------------------------------------------------------------------
-# def select_parents(population, num_parents, libraries):
-#     if len(population) < num_parents:
-#         raise ValueError("Population size is smaller than the number of parents to select.")
-
-#     # Calculate fitness values for each solution in the population
-#     fitness_values = [calculate_fitness(solution, libraries) for solution in population]
-
-#     # Normalize fitness values to probabilities
-#     total_fitness = sum(fitness_values)
-    
-#     # If all fitness values are 0, assign equal probabilities to all solutions
-#     if total_fitness == 0:
-#         parent_probabilities = [1 / len(population)] * len(population)
-#     else:
-#         parent_probabilities = [fitness / total_fitness for fitness in fitness_values]
-
-#     parents = []
-#     for _ in range(num_parents):
-#         parent_idx = roulette_wheel_selection(parent_probabilities)
-#         parents.append(population[parent_idx])
-#     return parents
-
-
-# def calculate_fitness(solution, libraries):
-#     # Here, you directly evaluate the fitness of each solution
-#     # You can implement the fitness calculation based on your problem's requirements
-#     # For example, you could calculate the total score of books selected in the solution
-#     total_score = 0
-#     for library_idx in solution:
-#         # Access the library and calculate its score or any other relevant metric
-#         library = libraries[library_idx]
-#         # Perform necessary calculations to determine the fitness of the solution
-#         # For instance, you could sum up the scores of books selected from this library
-#         total_score += sum(book.score for book in library.books)
-        
-#     return total_score
-
-
-# def roulette_wheel_selection(probabilities):
-#     r = random.random()
-#     cumulative_probability = 0
-    
-#     for i, prob in enumerate(probabilities):
-#         cumulative_probability += prob
-#         if r <= cumulative_probability:
-#             return i
-        
-#     return len(probabilities) - 1
-# --------------------------------------------------------------------
-
-
-# call this function in menu
 def genetic_options(book_scores, libraries, option, D):
-    options = {1: "Use default values", 2: "Personalize values"}
-    message = "\nGenetic algorithm uses default values.\nDo you want to continue with the default ones or do you want to personalize the values?\n"
-    print(message)
+    choices = {1: "Use default values", 2: "Personalize values"}
+    print("\nGenetic algorithm uses default values.")
+    print("Do you want to continue with the default ones or do you want to personalize the values?\n")
     
     while True:
-        for k, v in options.items():
-            print(str(k) + "| " + v)
+        for k, v in choices.items():
+            print(f"{k}| {v}")
             
         choice = int(input("\nChoose the values to use in genetic algorithm: "))
+        #print("Option value before calling get_default_values_for_ga:", option)  # Debug output
         population_size, num_generations, mutation_prob, swap_prob, population_variation = get_default_values_for_ga(option)
+        #print("Option value after calling get_default_values_for_ga:", option)  # Debug output
+        #print("Default values retrieved:", population_size, num_generations, mutation_prob, swap_prob, population_variation)  # Debug output
         
-        if (choice == 1): 
-            # call genetic algorithm with default values
+        if choice == 1: 
             return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation)
 
-        elif (choice == 2):
-            # call genetic algorithm with personalized values
-            population_size = personalized_input_for_ga("\nPopulation Size ", population_size, True, 6, 100)
-            num_generations = personalized_input_for_ga("\nNumber of Generations ", num_generations, True, 10, 1000)
-            mutation_prob = personalized_input_for_ga("\nMutation Probability ", mutation_prob, False, 0, 1)
-            swap_prob = personalized_input_for_ga("\nSwap Probability ", swap_prob, False, 0, 1)
-            population_variation = personalized_input_for_ga("\nPopulation Variation ", population_variation, False, 0, 1)
-            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation)
+        elif choice == 2:
+            population_size = personalized_input_for_ga("Population Size", population_size, True, 6, 100)
+            num_generations = personalized_input_for_ga("Number of Generations", num_generations, True, 10, 1000)
+            mutation_prob = personalized_input_for_ga("Mutation Probability", mutation_prob, False, 0, 1)
+            swap_prob = personalized_input_for_ga("Swap Probability", swap_prob, False, 0, 1)
+            return genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob)
         
         else: 
-            print("Invalid option. Choose a valid one.\n")
-        
+            print("Invalid option. Choose a valid one.\n")    
             
 def personalized_input_for_ga(value, default_value, is_int, min_value, max_value):
     user_value = input(value + "(default = " + str(default_value) + "): " )
@@ -380,47 +266,23 @@ def personalized_input_for_ga(value, default_value, is_int, min_value, max_value
 # function that given an input file returns the values for population size, number of generations, mutation and swap
 # probabilities and population variation
 def get_default_values_for_ga(option):
-    population_size = 50        # "./dataset/a_example.txt"
-    generations = 1000
-    mutation_prob = 0.2
-    swap_prob = 0.2
-    population_variation = 0.2
+    print (option)
+    if option == 1:
+        return (50, 1000, 0.2, 0.2, 0.2)
+    elif option == 2:
+        return (50, 1000, 0.2, 0.2, 0.2)
+    elif option == 3:
+        return (10, 10, 0.05, 0.05, 0.01)
+    elif option == 4:
+        return (10, 10, 0.05, 0.05, 0.001)
+    elif option == 5:
+        return (20, 500, 0.2, 0.2, 0.2)
+    elif option == 6:
+        return (20, 100, 0.2, 0.2, 0.2)
+    else:
+        print("Option not found. Returning default values." + str(option))
+        return (50, 1000, 0.2, 0.2, 0.2)
 
-    # all the below values were chosen after a battery of tests
-    if option == 2:             # "./dataset/b_read_on.txt"
-        population_size = 50
-        generations = 1000
-        mutation_prob = 0.2
-        swap_prob = 0.2
-        population_variation = 0.2
-        
-    elif option == 3:           # "./dataset/c_incunabula.txt"
-        population_size = 10
-        generations = 10
-        mutation_prob = 0.05
-        swap_prob = 0.05
-        population_variation = 0.01
-        
-    elif option == 4:           # "./dataset/d_tough_choices.txt"
-        population_size = 10
-        generations = 10
-        mutation_prob = 0.05
-        swap_prob = 0.05
-        population_variation = 0.001
-        
-    elif option == 5:           # "./dataset/e_so_many_books.txt"
-        population_size = 20
-        generations = 500
-        mutation_prob = 0.2
-        swap_prob = 0.2
-        population_variation = 0.2
-        
-    elif option == 6:           # "./dataset/f_libraries_of_the_world.txt"
-        population_size = 20
-        generations = 100
-        mutation_prob = 0.2
-        swap_prob = 0.2
-        population_variation = 0.2
 
-    return population_size, generations, mutation_prob, swap_prob, population_variation
+
     
