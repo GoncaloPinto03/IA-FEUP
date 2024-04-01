@@ -54,7 +54,24 @@ def simulated_annealing(B, L, D, book_scores, libraries):
 
     while temperature > min_temperature:
         for i in range(n_iterations):
-            new_solution = neighbor_solution(curr_solution, libraries, D)
+
+            solution_size = len(curr_solution)
+            if solution_size == 0:
+                return curr_solution
+            
+            new_solution = curr_solution[:]
+            neighbor_size = len(new_solution)
+
+            index = random.randrange(neighbor_size)
+            library, _ = new_solution[index]
+            
+            if random.random() < 0.5:
+                index_swap = random.randrange(neighbor_size)
+                new_solution[index], new_solution[index_swap] = new_solution[index_swap], new_solution[index]
+            else:
+                random_books = random.sample(library.books, min(len(library.books), library.books_per_day * (D - library.signup_days)))
+                new_solution[index] = (library, random_books)
+            
             new_score = score_solution(new_solution, D)
             
             delta = new_score - curr_score
@@ -72,41 +89,22 @@ def simulated_annealing(B, L, D, book_scores, libraries):
 
     return curr_score
 
-# Helper functions for Simulated Annealing
-def neighbor_solution(solution, libraries, D):
-
-    if not solution:
-        return solution
-    
-    neighbor = solution[:]
-    index = random.randrange(len(neighbor))
-    library, _ = neighbor[index]
-    
-    if random.random() < 0.5:
-        index_swap = random.randrange(len(neighbor))
-        neighbor[index], neighbor[index_swap] = neighbor[index_swap], neighbor[index]
-    else:
-        random_books = random.sample(library.books, min(len(library.books), library.books_per_day * (D - library.signup_days)))
-        neighbor[index] = (library, random_books)
-    
-    return neighbor
-
 def score_solution(solution, D):
 
-    days_remaining = D
+    remaining_days = D
     books_scanned = set()
     total_score = 0
 
     for library, books in solution:
-        if days_remaining <= 0:
+        if remaining_days <= 0:
             break
         else:
-            days_remaining -= library.signup_days
-            num_scanned_books = min(days_remaining * library.books_per_day, len(books))
-            for book in books[:num_scanned_books]:
+            remaining_days -= library.signup_days
+            number_scanned_books = min(remaining_days * library.books_per_day, len(books))
+            for book in books[:number_scanned_books]:
                 if book.id not in books_scanned:
-                    total_score += book.score
                     books_scanned.add(book.id)
+                    total_score += book.score
 
     return total_score
 # -------------------------------------------------------------------------------------------------------------------------

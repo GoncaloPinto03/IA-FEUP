@@ -58,7 +58,7 @@ ________________________
 Enter your choice: 
 ```
 
-Then the solution is shown as well as the precious menu again:
+After choosing the algorithm the solution is shown as well as the previous menu again:
 ```
 -----------------------------
          Solution
