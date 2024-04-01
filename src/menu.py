@@ -93,7 +93,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
         elif choice == '2':
             print("You've selected Local Search - First Neighbour Algorithm")
             t = datetime.datetime.now()
-            score = algorithms.ls_first_neighbour(B, L, D, book_scores, libraries)
+            score = algorithms.ls_first_neighbour(B, L, D, book_scores, libraries, ga_option)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")
@@ -102,7 +102,7 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
         elif choice == '3':
             print("You've selected Local Search - Best Neighbour Algorithm")
             t = datetime.datetime.now()
-            score = algorithms.ls_best_neighbour(B, L, D, book_scores, libraries)
+            score = algorithms.ls_best_neighbour(B, L, D, book_scores, libraries, ga_option)
             print("\n-----------------------------")
             print("         Solution")
             print("-----------------------------")

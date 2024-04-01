@@ -112,13 +112,13 @@ def score_solution(solution, D):
 # -------------------------------------------------------------------------------------------------------------------------
 
 # Local Search - First Neighbour Algorithm --------------------------------------------------------------------------------
-def ls_first_neighbour(B, L, D, book_scores, libraries):
+def ls_first_neighbour(B, L, D, book_scores, libraries, choice):
 
     libraries = ls_sort_libraries(libraries, book_scores)
     
     # Initialize the current solution
     current_libraries = libraries[:]  # Make a copy of libraries
-    current_score = greedy(B, L, D, book_scores, libraries)  # Score of the current solution
+    current_score = greedy(B, L, D, book_scores, libraries, choice)  # Score of the current solution
 
     # Initialize variables to track the best neighbor
     best_neighbor_score = current_score
@@ -139,13 +139,13 @@ def ls_first_neighbour(B, L, D, book_scores, libraries):
 # ------------------------------------------------------------------------------------------------------------------------
 
 # Local Search - Best Neighbour Algorithm --------------------------------------------------------------------------------
-def ls_best_neighbour(B, L, D, book_scores, libraries):
+def ls_best_neighbour(B, L, D, book_scores, libraries, choice):
 
     libraries = ls_sort_libraries(libraries, book_scores)
     
     # Initialize the current solution
     current_libraries = libraries[:]  # Make a copy of libraries
-    current_score = greedy(B, L, D, book_scores, libraries)  # Score of the current solution
+    current_score = greedy(B, L, D, book_scores, libraries, choice)  # Score of the current solution
 
     # Initialize variables to track the best neighbor
     best_neighbor_score = current_score
@@ -333,11 +333,10 @@ def personalized_input_for_ga(value, default_value, is_int, min_value, max_value
 # probabilities and population variation
 def get_default_values_for_ga(option):
     option = int(option)
-    print (option)
     if option == 1:
         return (50, 1000, 0.2, 0.2, 0.2)
     elif option == 2:
-        return (50, 1000, 0.2, 0.2, 0.2)
+        return (50, 250, 0.2, 0.2, 0.2)
     elif option == 3:
         return (10, 10, 0.05, 0.05, 0.01)
     elif option == 4:
@@ -353,8 +352,6 @@ def get_default_values_for_ga(option):
 
 # Write results on output file --------------------------------------------------------------------------------------------
 def write_solution(choice, signup_process):
-
-    print(choice)
 
     base_name = ''
 
