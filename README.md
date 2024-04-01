@@ -2,24 +2,70 @@
 
 Theme 3B - Optimization Problems - **Book Scanning**
 
-## Introduction
-Books allow us to discover fantasy worlds and beer understand the world we live in.
-They enable us to learn about everything from photography to compilers… and of
-course a good book is a great way to relax!
-Google Books is a project that embraces the value books bring to our daily lives. It
-aspires to bring the world's books online and make them accessible to everyone. In the
-last 15 years, Google Books has collected digital copies of 40 million books in more
-than 400 languages , paly by scanning books from libraries and publishers all around
-1
-the world.
-In this competition problem, we will explore the challenges of seing up a scanning
-process for millions of books stored in libraries around the world and having them
-scanned at a scanning facility.
+## How to build and run the project
 
-## Task
-Given a description of libraries and books available, plan which books to scan from
-which library to maximize the total score of all scanned books, taking into account that
-each library needs to be signed up before it can ship books.
+Run the python file main.py - ```python3 main.py```
+
+Now the following menu will appear:
+
+```
+Menu:
+________________________
+
+1| Scan books from a file
+2| Best score for each file
+3| Credits
+4| Exit
+________________________
+
+Enter your choice: 
+```
+
+- Choose option 1 to scan a file with a specific algorithm
+- Choose option 2 to check the top scores for each file
+- Choose option 3 to access the credits
+Choose option 4 to exit the program
+
+If you pressed option 1 the following menu will appear:
+```
+Select a file:
+________________________
+
+1| a_example.txt
+2| b_read_on.txt
+3| c_incunabula.txt
+4| d_tough_choices.txt
+5| e_so_many_books.txt
+6| f_libraries_of_the_world.txt
+7| Go back
+________________________
+
+Enter your choice: 
+```
+After selecting the file you want to read the following screen appears:
+```
+Select Algorithm:
+________________________
+
+1| Greedy
+2| Local Search - First Neighbour
+3| Local Search - Best Neighbour
+4| Simulated Annealing
+5| Genetic
+6| Go back
+________________________
+
+Enter your choice: 
+```
+
+Then the solution is shown as well as the precious menu again:
+```
+-----------------------------
+         Solution
+-----------------------------
+Score: 21
+Elapsed Time: 0:00:00.001858
+```
 
 |   Name    |   Mail    |
 | --- | --- |
