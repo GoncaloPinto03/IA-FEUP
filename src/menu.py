@@ -136,11 +136,11 @@ def selectAlgorithm(B, L, D, book_scores, libraries, ga_option):
 def bestScores():
     print("Best scores for each file:")
     print("a_example.txt: 21, using Greedy Algorithm")
-    print("b_read_on.txt: 5822900, using Greedy Algorithm")
-    print("c_incunabula.txt: XXX, using Greedy Algorithm")
-    print("d_tough_choices.txt: XXX, using Greedy Algorithm")
-    print("e_so_many_books.txt: XXX, using Greedy Algorithm")
-    print("f_libraries_of_the_world.txt: XXX, using Greedy Algorithm")
+    print("b_read_on.txt: 5911200, using Simulated Annealing Algorithm")
+    print("c_incunabula.txt: 5647308, using Local Search - Best Neighbour Algorithm")
+    print("d_tough_choices.txt: 4815395, using Greedy Algorithm")
+    print("e_so_many_books.txt: 4602155, using Greedy Algorithm")
+    print("f_libraries_of_the_world.txt: 5240161, using Greedy Algorithm")
 
 # credits function
 def credits():
