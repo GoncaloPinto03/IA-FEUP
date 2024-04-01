@@ -1,7 +1,7 @@
 import random, math
 
 # Greedy Algorithm ----------------------------------------------------------------------------------------------------
-def greedy(B, L, D, book_scores, libraries):
+def greedy(B, L, D, book_scores, libraries, choice):
 
     days_remaining = D
     signup_process = []
@@ -26,6 +26,8 @@ def greedy(B, L, D, book_scores, libraries):
                     total_score += book.score
 
             signup_process.append((library, books_to_scan))
+    
+    write_solution(choice, signup_process)
 
     return total_score
 
@@ -195,7 +197,7 @@ def calculate_neighbor_score(libraries, D, book_scores):
 # Genetic Algorithm -------------------------------------------------------------------------------------------------------
 def genetic(book_scores, libraries, D, population_size, num_generations, mutation_prob, swap_prob, population_variation):
     # Implement the Genetic algorithm
-    # 1. initialize population (w/ greedy)
+    # 1. initialize population
     # 2. traverse generations and populations 
     # 3. select parents
     # 4. crossover
@@ -347,4 +349,32 @@ def get_default_values_for_ga(option):
     else:
         print("Option not found. Returning default values." + str(option))
         return (50, 1000, 0.2, 0.2, 0.2)
+# -------------------------------------------------------------------------------------------------------------------------
 
+# Write results on output file --------------------------------------------------------------------------------------------
+def write_solution(choice, signup_process):
+
+    print(choice)
+
+    base_name = ''
+
+    if choice == '1':
+        base_name = "a_example"
+    elif choice == '2':
+        base_name = 'b_read_on'
+    elif choice == '3':
+        base_name = 'c_incunabula'
+    elif choice == '4':
+        base_name = 'd_tough_choices'
+    elif choice == '5':
+        base_name = 'e_so_many_books'
+    elif choice == '6':
+        base_name = 'f_libraries_of_the_world'
+    
+    output_path = f'output/{base_name}_output.txt'
+    with open(output_path, 'w') as file:
+        file.write(f"{len(signup_process)}\n")
+        for library, books in signup_process:
+            file.write(f"{library.id} {len(books)}\n")
+            book_ids = ' '.join(str(book.id) for book in books)
+            file.write(book_ids + "\n")
