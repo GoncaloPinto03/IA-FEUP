@@ -20,6 +20,11 @@ Otherwise you can install the libraries manually using pip install:
 5. pip install scikit-learn
 6. pip install xgboost
 
+### Running
+
+Run all the cells on the file main.ipynb on src folder.
+
+
 |   Name    |   Mail    |
 | --- | --- |
 | Gonçalo Pinto | up202108693@up.pt |
